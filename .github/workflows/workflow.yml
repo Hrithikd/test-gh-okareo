@@ -1,0 +1,28 @@
+name: LLM App Development Workflow
+env:
+  OKAREO_API_KEY: ${{ secrets.OKAREO_API_KEY }}
+
+on:
+  push:
+    branches:
+    - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+  
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install Okareo 
+        uses: okareo-ai/okareo-action@v2
+      
+      - name: Run Validation
+        run: |
+          okareo -v
+          okareo run -d
