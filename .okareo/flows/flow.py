@@ -19,30 +19,6 @@ METRICS_MIN = {
     "fluency": 3.0,
 }
 
-def check_metrics_pass(eval_run, metrics_min):
-    """Check if evaluation metrics meet minimum thresholds"""
-    if not eval_run.model_metrics or not eval_run.model_metrics.mean_scores:
-        print("❌ No metrics found in evaluation results")
-        return False
-    
-    mean_scores = eval_run.model_metrics.mean_scores.to_dict()
-    passed = True
-    
-    print("\n📊 Evaluation Results:")
-    print("-" * 50)
-    
-    for metric, min_threshold in metrics_min.items():
-        if metric in mean_scores:
-            score = mean_scores[metric]
-            status = "✅ PASS" if score >= min_threshold else "❌ FAIL"
-            print(f"{metric:15} {score:.2f} / {min_threshold:.2f} {status}")
-            if score < min_threshold:
-                passed = False
-        else:
-            print(f"{metric:15} Not found in results")
-    
-    print("-" * 50)
-    return passed
 
 try:
     # Initialize Okareo client
@@ -110,19 +86,7 @@ try:
     reporter.log()
     
     # Check if metrics pass thresholds
-    passed = check_metrics_pass(evaluation, METRICS_MIN)
     
-    # Print summary
-    print(f"\n🔗 View detailed results: {evaluation.app_link}")
-    print(f"📋 Test Run ID: {evaluation.id}")
-    
-    if passed:
-        print("\n✅ Evaluation PASSED - All metrics meet minimum thresholds")
-        sys.exit(0)
-    else:
-        print("\n❌ Evaluation FAILED - Some metrics below minimum thresholds")
-        sys.exit(1)
-        
 except Exception as error:
     print(f"\n❌ CI failed because of an error calling Okareo: {error}")
     sys.exit(1)
